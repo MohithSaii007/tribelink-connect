@@ -140,8 +140,12 @@ export const getStudentWorkspace = createServerFn({ method: "GET" })
     }
 
 
-    const docs = (docsRes.data ?? []) as unknown as DocumentLike[];
-    const apps = appsRes.data ?? [];
+    const documents = strip(docsRes.data);
+    const apps = strip(appsRes.data);
+    const payments = strip(paysRes.data);
+    const events = strip(eventsRes.data);
+
+    const docs = documents as unknown as DocumentLike[];
     const schemeList = (schemes ?? []) as unknown as SchemeLike[];
 
     const eligibility = schemeList.map((s) => ({
@@ -155,14 +159,15 @@ export const getStudentWorkspace = createServerFn({ method: "GET" })
       profile,
       student,
       schemes: schemeList,
-      documents: docsRes.data ?? [],
-      applications: apps,
-      events: eventsRes.data ?? [],
-      payments: paysRes.data ?? [],
+      documents: documents as never,
+      applications: apps as never,
+      events: events as never,
+      payments: payments as never,
       notifications: notifRes.data ?? [],
       eligibility,
       verification,
     };
+
   });
 
 /* ------------------------------------------------------------------ */
