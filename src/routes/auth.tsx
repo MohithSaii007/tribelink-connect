@@ -13,7 +13,35 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { seedDemoData } from "@/lib/seed.functions";
 import { getStudentWorkspace, updateStudentProfile } from "@/lib/tribalink.functions";
+
+function SeedButton() {
+  const seed = useServerFn(seedDemoData);
+  const [busy, setBusy] = useState(false);
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      className="mt-3 w-full"
+      disabled={busy}
+      onClick={async () => {
+        setBusy(true);
+        try {
+          const res = await seed({});
+          toast.success(res.message);
+        } catch (e) {
+          toast.error(e instanceof Error ? e.message : "Demo data could not be loaded.");
+        } finally {
+          setBusy(false);
+        }
+      }}
+    >
+      {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : null} Load demo accounts and synthetic data
+    </Button>
+  );
+}
 
 const SearchSchema = z.object({
   mode: z.enum(["login", "register", "forgot", "reset"]).optional(),
