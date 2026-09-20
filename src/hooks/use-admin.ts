@@ -21,7 +21,7 @@ async function callWithAuthRetry<T>(run: () => Promise<T>): Promise<T> {
   const recoveryKey = "tribalink-admin-request-recovered";
   const isStaffDenied = (error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
-    return /staff access only|forbidden/i.test(message);
+    return /staff access only/i.test(message);
   };
 
   try {
