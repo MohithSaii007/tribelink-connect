@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { StaffAccessCard } from "@/components/tribalink/staff-access";
 import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -27,14 +28,14 @@ export const Route = createFileRoute("/admin/analytics")({
 const COLORS = ["oklch(0.42 0.09 155)", "oklch(0.62 0.13 62)", "oklch(0.48 0.12 25)"];
 
 function Analytics() {
-  const { data, isPending, isError } = useAnalytics();
+  const { data, isPending, isError, error } = useAnalytics();
   const [view, setView] = useState<"applications" | "gaps">("applications");
 
   if (isError) {
     return (
       <div className="space-y-4">
         <PageHeader title="Analytics" />
-        <p className="rounded-md border border-destructive/40 bg-destructive/10 p-4 text-sm">Staff access is required for this page.</p>
+        <StaffAccessCard error={error} />
       </div>
     );
   }
