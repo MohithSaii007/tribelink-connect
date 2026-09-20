@@ -183,13 +183,20 @@ function LoginCard({ next }: { next?: string | undefined }) {
       return;
     }
     toast.success("Signed in. Loading your scholarship view…");
-    await routeAfterLogin(navigate, next, data.user?.id, (staff) =>
-      queryClient.prefetchQuery({
-        queryKey: [staff ? "admin-analytics" : "workspace"],
-        queryFn: () => (staff ? loadAnalytics({}) : loadWorkspace({})),
+    await routeAfterLogin(navigate, next, data.user?.id, (staff) => {
+      if (staff) {
+        return queryClient.prefetchQuery({
+          queryKey: ["admin-analytics"],
+          queryFn: () => loadAnalytics({}),
+          staleTime: 300_000,
+        });
+      }
+      return queryClient.prefetchQuery({
+        queryKey: ["workspace"],
+        queryFn: () => loadWorkspace({}),
         staleTime: 300_000,
-      }),
-    );
+      });
+    });
   }
 
   return (
