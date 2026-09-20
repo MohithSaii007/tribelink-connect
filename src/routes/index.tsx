@@ -49,6 +49,9 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  // Loaded on the server with the page itself, so the scheme cards are already
+  // in the HTML instead of appearing after a second request.
+  loader: () => listPublicSchemes(),
   component: Landing,
 });
 
