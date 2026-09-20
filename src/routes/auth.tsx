@@ -134,17 +134,18 @@ function AuthPage() {
 
 async function routeAfterLogin(navigate: ReturnType<typeof useNavigate>, next?: string) {
   if (next && next.startsWith("/")) {
-    window.location.href = next;
+    await navigate({ to: next });
     return;
   }
-  const { data } = await supabase.auth.getUser();
-  const userId = data.user?.id;
+  const { data } = await supabase.auth.getSession();
+  const userId = data.session?.user?.id;
   const { data: roles } = userId
     ? await supabase.from("user_roles").select("role").eq("user_id", userId)
     : { data: null };
   const staff = (roles ?? []).some(({ role }) => role === "admin" || role === "officer");
-  window.location.href = staff ? "/admin/dashboard" : "/student/dashboard";
-  void navigate;
+  // Client-side navigation keeps the already-warm app shell instead of paying
+  // for a whole fresh page load after sign-in.
+  await navigate({ to: staff ? "/admin/dashboard" : "/student/dashboard" });
 }
 
 function LoginCard({ next }: { next?: string | undefined }) {
