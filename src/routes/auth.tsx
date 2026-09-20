@@ -134,18 +134,17 @@ function AuthPage() {
 
 async function routeAfterLogin(navigate: ReturnType<typeof useNavigate>, next?: string) {
   if (next && next.startsWith("/")) {
-    await navigate({ to: next as never });
+    window.location.href = next;
     return;
   }
-  // The session is already in memory after sign-in, so read it locally instead
-  // of paying for another round-trip to the auth server.
-  const { data } = await supabase.auth.getSession();
-  const userId = data.session?.user?.id;
+  const { data } = await supabase.auth.getUser();
+  const userId = data.user?.id;
   const { data: roles } = userId
     ? await supabase.from("user_roles").select("role").eq("user_id", userId)
     : { data: null };
   const staff = (roles ?? []).some(({ role }) => role === "admin" || role === "officer");
-  await navigate({ to: staff ? "/admin/dashboard" : "/student/dashboard" });
+  window.location.href = staff ? "/admin/dashboard" : "/student/dashboard";
+  void navigate;
 }
 
 function LoginCard({ next }: { next?: string | undefined }) {

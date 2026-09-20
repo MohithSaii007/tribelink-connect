@@ -8,8 +8,7 @@ import { getSession } from "@/lib/tribalink.functions";
 export function useAuthUser() {
   const [userId, setUserId] = useState<string | null | undefined>(undefined);
   useEffect(() => {
-    // Read the cached session instead of calling the auth server on every mount.
-    supabase.auth.getSession().then(({ data }) => setUserId(data.session?.user?.id ?? null));
+    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       setUserId(session?.user?.id ?? null);
     });
