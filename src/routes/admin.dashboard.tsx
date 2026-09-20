@@ -16,6 +16,7 @@ import {
 
 import { DemoDataBadge, KpiCard, LoadingPanel, PageHeader } from "@/components/tribalink/primitives";
 import { Button } from "@/components/ui/button";
+import { StaffAccessCard } from "@/components/tribalink/staff-access";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAnalytics } from "@/hooks/use-admin";
 import { INR, STAGE_LABELS } from "@/lib/intel";
