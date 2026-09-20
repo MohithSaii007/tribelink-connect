@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { StaffAccessCard } from "@/components/tribalink/staff-access";
 import { useState } from "react";
 import { ScrollText } from "lucide-react";
 
@@ -24,14 +25,14 @@ export const Route = createFileRoute("/admin/audit-logs")({
 });
 
 function AuditLogs() {
-  const { data, isPending, isError } = useAuditLogs();
+  const { data, isPending, isError, error } = useAuditLogs();
   const [search, setSearch] = useState("");
 
   if (isError) {
     return (
       <div className="space-y-4">
         <PageHeader title="Audit logs" />
-        <p className="rounded-md border border-destructive/40 bg-destructive/10 p-4 text-sm">Staff access is required for the audit trail.</p>
+        <StaffAccessCard error={error} />
       </div>
     );
   }

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { StaffAccessCard } from "@/components/tribalink/staff-access";
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
@@ -40,7 +41,7 @@ const NEXT_ACTIONS: { value: string; label: string }[] = [
 ];
 
 function AdminApplications() {
-  const { data, isPending, isError } = useAdminApplications();
+  const { data, isPending, isError, error } = useAdminApplications();
   const refresh = useRefreshAdmin();
   const fn = useServerFn(advanceApplication);
   const [search, setSearch] = useState("");
@@ -69,7 +70,7 @@ function AdminApplications() {
     return (
       <div className="space-y-4">
         <PageHeader title="Applications" />
-        <p className="rounded-md border border-destructive/40 bg-destructive/10 p-4 text-sm">Staff access is required for this page.</p>
+        <StaffAccessCard error={error} />
       </div>
     );
   }

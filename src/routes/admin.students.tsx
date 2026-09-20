@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { StaffAccessCard } from "@/components/tribalink/staff-access";
 import { useMemo, useState } from "react";
 import { Users } from "lucide-react";
 
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/admin/students")({
 });
 
 function Students() {
-  const { data, isPending, isError } = useAdminStudents();
+  const { data, isPending, isError, error } = useAdminStudents();
   const [search, setSearch] = useState("");
   const [state, setState] = useState("all");
   const [status, setStatus] = useState("all");
@@ -39,7 +40,7 @@ function Students() {
     return (
       <div className="space-y-4">
         <PageHeader title="Students" />
-        <p className="rounded-md border border-destructive/40 bg-destructive/10 p-4 text-sm">Staff access is required for this register.</p>
+        <StaffAccessCard error={error} />
       </div>
     );
   }
