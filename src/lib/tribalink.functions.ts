@@ -547,8 +547,8 @@ export const getAdminAnalytics = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
-    await assertStaff(supabase as never, userId);
-    const [students, apps, payments, gaps, verifications, schemes] = await Promise.all([
+    const [, students, apps, payments, gaps, verifications, schemes] = await Promise.all([
+      assertStaff(supabase as never, userId),
       supabase.from("student_profiles").select("*"),
       supabase.from("applications").select("*"),
       supabase.from("payments").select("*"),
@@ -631,8 +631,8 @@ export const listAdminStudents = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
-    await assertStaff(supabase as never, userId);
-    const [{ data: students }, { data: apps }] = await Promise.all([
+    const [, { data: students }, { data: apps }] = await Promise.all([
+      assertStaff(supabase as never, userId),
       supabase.from("student_profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("applications").select("*"),
     ]);
@@ -647,8 +647,8 @@ export const listAdminApplications = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
-    await assertStaff(supabase as never, userId);
-    const [{ data: apps }, { data: students }, { data: schemes }] = await Promise.all([
+    const [, { data: apps }, { data: students }, { data: schemes }] = await Promise.all([
+      assertStaff(supabase as never, userId),
       supabase.from("applications").select("*").order("submitted_at", { ascending: false }),
       supabase.from("student_profiles").select("id, full_name, state, district, institution, annual_income, academic_score"),
       supabase.from("scholarship_schemes").select("id, short_name"),
@@ -670,8 +670,8 @@ export const listReviewQueue = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
-    await assertStaff(supabase as never, userId);
-    const [{ data: docs }, { data: students }, { data: apps }, { data: schemes }] = await Promise.all([
+    const [, { data: docs }, { data: students }, { data: apps }, { data: schemes }] = await Promise.all([
+      assertStaff(supabase as never, userId),
       supabase
         .from("documents")
         .select("*")
@@ -815,8 +815,10 @@ export const listBeneficiaryGaps = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
-    await assertStaff(supabase as never, userId);
-    const { data } = await supabase.from("beneficiary_gaps").select("*").order("confidence", { ascending: false });
+    const [, { data }] = await Promise.all([
+      assertStaff(supabase as never, userId),
+      supabase.from("beneficiary_gaps").select("*").order("confidence", { ascending: false }),
+    ]);
     return data ?? [];
   });
 
@@ -852,8 +854,10 @@ export const listAuditLogs = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
-    await assertStaff(supabase as never, userId);
-    const { data } = await supabase.from("audit_logs").select("*").order("created_at", { ascending: false }).limit(200);
+    const [, { data }] = await Promise.all([
+      assertStaff(supabase as never, userId),
+      supabase.from("audit_logs").select("*").order("created_at", { ascending: false }).limit(200),
+    ]);
     return data ?? [];
   });
 
