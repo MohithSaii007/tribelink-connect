@@ -1,6 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowRight,
   BadgeCheck,
@@ -49,6 +47,9 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  // Loaded on the server with the page itself, so the scheme cards are already
+  // in the HTML instead of appearing after a second request.
+  loader: () => listPublicSchemes(),
   component: Landing,
 });
 
@@ -77,8 +78,9 @@ const FEATURES = [
 const STEPS = ["Create Profile", "Check Eligibility", "Upload Documents", "Verify Information", "Apply", "Track", "Receive Scholarship"];
 
 function Landing() {
-  const fn = useServerFn(listPublicSchemes);
-  const { data: schemes, isPending } = useQuery({ queryKey: ["public-schemes"], queryFn: () => fn({}) });
+  const schemes = Route.useLoaderData();
+  const isPending = false;
+
 
   return (
     <div className="min-h-screen bg-background">

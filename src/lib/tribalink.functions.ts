@@ -85,17 +85,29 @@ export const getStudentWorkspace = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
 
-    // One parallel round-trip for everything that only needs the user id.
+    // Everything the student workspace needs in a single parallel round-trip:
+    // documents, applications (with their activity) and payments come back
+    // nested inside the student row instead of as separate follow-up requests.
+    const NESTED = "*, documents(*), applications(*, application_events(*)), payments(*)";
     const [{ data: profile }, studentRes, { data: schemes }, notifRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
-      supabase.from("student_profiles").select("*").eq("user_id", userId).maybeSingle(),
+      supabase.from("student_profiles").select(NESTED).eq("user_id", userId).maybeSingle(),
       supabase.from("scholarship_schemes").select("*").order("award_amount"),
       supabase.from("notifications").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(50),
     ]);
 
-    let student = studentRes.data;
+    type Tables = Database["public"]["Tables"];
+    type StudentRow = Tables["student_profiles"]["Row"];
+    type AppRow = Tables["applications"]["Row"] & { application_events?: Tables["application_events"]["Row"][] };
+    type NestedRow = StudentRow & {
+      documents?: Tables["documents"]["Row"][];
+      applications?: AppRow[];
+      payments?: Tables["payments"]["Row"][];
+    };
 
-    if (!student) {
+    let row = (studentRes.data ?? null) as NestedRow | null;
+
+    if (!row) {
       const { data: created } = await supabase
         .from("student_profiles")
         .insert({
@@ -106,23 +118,29 @@ export const getStudentWorkspace = createServerFn({ method: "GET" })
         })
         .select("*")
         .maybeSingle();
-      student = created;
+      row = (created as StudentRow | null) as NestedRow | null;
     }
 
-    const sid = student?.id;
-    const [docsRes, appsRes, paysRes] = await Promise.all([
-      sid ? supabase.from("documents").select("*").eq("student_id", sid).order("created_at", { ascending: false }) : { data: [] },
-      sid ? supabase.from("applications").select("*").eq("student_id", sid).order("submitted_at", { ascending: false }) : { data: [] },
-      sid ? supabase.from("payments").select("*").eq("student_id", sid).order("created_at", { ascending: false }) : { data: [] },
-    ]);
+    const nestedDocs = row?.documents ?? [];
+    const nestedApps = row?.applications ?? [];
+    const nestedPays = row?.payments ?? [];
 
-    const appIds = (appsRes.data ?? []).map((a) => a.id);
-    const eventsRes = appIds.length
-      ? await supabase.from("application_events").select("*").in("application_id", appIds).order("created_at", { ascending: true })
-      : { data: [] };
+    let student: StudentRow | null = null;
+    if (row) {
+      const { documents: _d, applications: _a, payments: _p, ...fields } = row;
+      student = fields as StudentRow;
+    }
 
-    const docs = (docsRes.data ?? []) as unknown as DocumentLike[];
-    const apps = appsRes.data ?? [];
+    const desc = (a?: string | null, b?: string | null) => (b ?? "").localeCompare(a ?? "");
+    const docsData = nestedDocs.slice().sort((a, b) => desc(a.created_at, b.created_at));
+    const appsWithEvents = nestedApps.slice().sort((a, b) => desc(a.submitted_at, b.submitted_at));
+    const paysData = nestedPays.slice().sort((a, b) => desc(a.created_at, b.created_at));
+    const eventsData = appsWithEvents
+      .flatMap((a) => a.application_events ?? [])
+      .sort((a, b) => (a.created_at ?? "").localeCompare(b.created_at ?? ""));
+    const apps = appsWithEvents.map(({ application_events: _events, ...rest }) => rest);
+
+    const docs = docsData as unknown as DocumentLike[];
     const schemeList = (schemes ?? []) as unknown as SchemeLike[];
 
     const eligibility = schemeList.map((s) => ({
@@ -136,10 +154,10 @@ export const getStudentWorkspace = createServerFn({ method: "GET" })
       profile,
       student,
       schemes: schemeList,
-      documents: docsRes.data ?? [],
+      documents: docsData,
       applications: apps,
-      events: eventsRes.data ?? [],
-      payments: paysRes.data ?? [],
+      events: eventsData,
+      payments: paysData,
       notifications: notifRes.data ?? [],
       eligibility,
       verification,
