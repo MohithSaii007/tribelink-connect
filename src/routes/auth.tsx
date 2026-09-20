@@ -137,6 +137,7 @@ async function routeAfterLogin(
   navigate: ReturnType<typeof useNavigate>,
   next?: string,
   userId?: string,
+  email?: string,
   warmDashboard?: (staff: boolean) => Promise<void>,
 ) {
   if (next && next.startsWith("/")) {
@@ -148,16 +149,20 @@ async function routeAfterLogin(
     const { data } = await supabase.auth.getSession();
     activeUserId = data.session?.user?.id;
   }
-  const { data: roles } = activeUserId
-    ? await supabase.from("user_roles").select("role").eq("user_id", activeUserId)
-    : { data: null };
-  const staff = (roles ?? []).some(({ role }) => role === "admin" || role === "officer");
+  // Demo accounts have fixed portal destinations. Skipping a remote role read
+  // here removes a noticeable extra wait from the most-used demonstration flow;
+  // every Ministry server function still enforces the staff role securely.
+  let staff = email === "admin@tribalink.demo";
+  if (email !== "admin@tribalink.demo" && email !== "student@tribalink.demo") {
+    const { data: roles } = activeUserId
+      ? await supabase.from("user_roles").select("role").eq("user_id", activeUserId)
+      : { data: null };
+    staff = (roles ?? []).some(({ role }) => role === "admin" || role === "officer");
+  }
   // Start the dashboard request before navigation. The destination hook reuses
   // the same in-flight query instead of beginning its work after the page opens.
-  await Promise.all([
-    warmDashboard?.(staff) ?? Promise.resolve(),
-    navigate({ to: staff ? "/admin/dashboard" : "/student/dashboard" }),
-  ]);
+  void warmDashboard?.(staff);
+  await navigate({ to: staff ? "/admin/dashboard" : "/student/dashboard" });
 }
 
 function LoginCard({ next }: { next?: string | undefined }) {
@@ -183,7 +188,7 @@ function LoginCard({ next }: { next?: string | undefined }) {
       return;
     }
     toast.success("Signed in. Loading your scholarship view…");
-    await routeAfterLogin(navigate, next, data.user?.id, (staff) => {
+    await routeAfterLogin(navigate, next, data.user?.id, data.user?.email, (staff) => {
       if (staff) {
         return queryClient.prefetchQuery({
           queryKey: ["admin-analytics"],
