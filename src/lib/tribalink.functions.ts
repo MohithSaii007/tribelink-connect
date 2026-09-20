@@ -96,7 +96,16 @@ export const getStudentWorkspace = createServerFn({ method: "GET" })
       supabase.from("notifications").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(50),
     ]);
 
-    let row = studentRes.data as Record<string, unknown> | null;
+    type Tables = Database["public"]["Tables"];
+    type StudentRow = Tables["student_profiles"]["Row"];
+    type AppRow = Tables["applications"]["Row"] & { application_events?: Tables["application_events"]["Row"][] };
+    type NestedRow = StudentRow & {
+      documents?: Tables["documents"]["Row"][];
+      applications?: AppRow[];
+      payments?: Tables["payments"]["Row"][];
+    };
+
+    let row = (studentRes.data ?? null) as NestedRow | null;
 
     if (!row) {
       const { data: created } = await supabase
@@ -109,25 +118,27 @@ export const getStudentWorkspace = createServerFn({ method: "GET" })
         })
         .select("*")
         .maybeSingle();
-      row = (created as Record<string, unknown> | null) ?? null;
+      row = (created as StudentRow | null) as NestedRow | null;
     }
 
-    const { documents: nestedDocs, applications: nestedApps, payments: nestedPays, ...studentFields } = (row ?? {}) as Record<
-      string,
-      unknown
-    >;
-    const student = row ? (studentFields as never) : null;
+    const nestedDocs = row?.documents ?? [];
+    const nestedApps = row?.applications ?? [];
+    const nestedPays = row?.payments ?? [];
 
-    const byDateDesc = (a: string | null, b: string | null) => (b ?? "").localeCompare(a ?? "");
-    const docsData = ((nestedDocs as Record<string, never>[]) ?? []).slice().sort((a, b) => byDateDesc(a["created_at"], b["created_at"]));
-    const appsData = ((nestedApps as Record<string, never>[]) ?? [])
-      .slice()
-      .sort((a, b) => byDateDesc(a["submitted_at"], b["submitted_at"]));
-    const paysData = ((nestedPays as Record<string, never>[]) ?? []).slice().sort((a, b) => byDateDesc(a["created_at"], b["created_at"]));
-    const eventsData = appsData
-      .flatMap((a) => ((a["application_events"] as Record<string, never>[]) ?? []))
-      .sort((a, b) => (a["created_at"] ?? "").localeCompare(b["created_at"] ?? ""));
-    const apps = appsData.map(({ application_events: _events, ...rest }) => rest);
+    let student: StudentRow | null = null;
+    if (row) {
+      const { documents: _d, applications: _a, payments: _p, ...fields } = row;
+      student = fields as StudentRow;
+    }
+
+    const desc = (a?: string | null, b?: string | null) => (b ?? "").localeCompare(a ?? "");
+    const docsData = nestedDocs.slice().sort((a, b) => desc(a.created_at, b.created_at));
+    const appsWithEvents = nestedApps.slice().sort((a, b) => desc(a.submitted_at, b.submitted_at));
+    const paysData = nestedPays.slice().sort((a, b) => desc(a.created_at, b.created_at));
+    const eventsData = appsWithEvents
+      .flatMap((a) => a.application_events ?? [])
+      .sort((a, b) => (a.created_at ?? "").localeCompare(b.created_at ?? ""));
+    const apps = appsWithEvents.map(({ application_events: _events, ...rest }) => rest);
 
     const docs = docsData as unknown as DocumentLike[];
     const schemeList = (schemes ?? []) as unknown as SchemeLike[];
@@ -143,10 +154,10 @@ export const getStudentWorkspace = createServerFn({ method: "GET" })
       profile,
       student,
       schemes: schemeList,
-      documents: docsRes.data ?? [],
+      documents: docsData,
       applications: apps,
-      events: eventsRes.data ?? [],
-      payments: paysRes.data ?? [],
+      events: eventsData,
+      payments: paysData,
       notifications: notifRes.data ?? [],
       eligibility,
       verification,
