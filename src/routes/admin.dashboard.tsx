@@ -37,15 +37,18 @@ export const Route = createFileRoute("/admin/dashboard")({
 const COLORS = ["oklch(0.42 0.09 155)", "oklch(0.62 0.13 62)", "oklch(0.55 0.08 200)", "oklch(0.48 0.12 25)", "oklch(0.66 0.1 130)", "oklch(0.36 0.05 250)"];
 
 function AdminDashboard() {
-  const { data, isPending, isError } = useAnalytics();
+  const { data, isPending, isError, refetch, isFetching } = useAnalytics();
 
   if (isError) {
     return (
       <div className="space-y-4">
         <PageHeader title="Ministry dashboard" />
-        <p className="rounded-md border border-destructive/40 bg-destructive/10 p-4 text-sm">
-          This console is available to Ministry and nodal officer accounts only. Sign in with a staff account to continue.
-        </p>
+        <div className="rounded-md border border-border bg-card p-4 text-sm">
+          <p>The Ministry dashboard could not be loaded. Please try again.</p>
+          <Button className="mt-3" size="sm" disabled={isFetching} onClick={() => void refetch()}>
+            {isFetching ? "Trying again…" : "Try again"}
+          </Button>
+        </div>
       </div>
     );
   }
