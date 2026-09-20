@@ -140,10 +140,12 @@ export const getStudentWorkspace = createServerFn({ method: "GET" })
     }
 
 
-    const documents = strip(docsRes.data);
-    const apps = strip(appsRes.data);
-    const payments = strip(paysRes.data);
-    const events = strip(eventsRes.data);
+    type Row<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"];
+    const documents = strip(docsRes.data) as unknown as Row<"documents">[];
+    const apps = strip(appsRes.data) as unknown as Row<"applications">[];
+    const payments = strip(paysRes.data) as unknown as Row<"payments">[];
+    const events = strip(eventsRes.data) as unknown as Row<"application_events">[];
+
 
     const docs = documents as unknown as DocumentLike[];
     const schemeList = (schemes ?? []) as unknown as SchemeLike[];
