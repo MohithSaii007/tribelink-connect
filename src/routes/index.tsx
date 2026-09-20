@@ -80,8 +80,9 @@ const FEATURES = [
 const STEPS = ["Create Profile", "Check Eligibility", "Upload Documents", "Verify Information", "Apply", "Track", "Receive Scholarship"];
 
 function Landing() {
-  const fn = useServerFn(listPublicSchemes);
-  const { data: schemes, isPending } = useQuery({ queryKey: ["public-schemes"], queryFn: () => fn({}) });
+  const schemes = Route.useLoaderData();
+  const isPending = false;
+
 
   return (
     <div className="min-h-screen bg-background">
