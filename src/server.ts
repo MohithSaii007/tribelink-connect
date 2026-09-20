@@ -1,5 +1,25 @@
 import "./lib/error-capture";
 
+import {
+  PUBLIC_SUPABASE_PROJECT_ID,
+  PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  PUBLIC_SUPABASE_URL,
+} from "./lib/public-config";
+
+// Fallbacks so server-side code works on hosts where env vars are not set.
+const envDefaults: Record<string, string> = {
+  SUPABASE_URL: PUBLIC_SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY: PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  SUPABASE_PROJECT_ID: PUBLIC_SUPABASE_PROJECT_ID,
+};
+try {
+  for (const [key, value] of Object.entries(envDefaults)) {
+    if (!process.env[key]) process.env[key] = value;
+  }
+} catch {
+  // process.env may be immutable in some runtimes; the client-side defines cover that case.
+}
+
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
