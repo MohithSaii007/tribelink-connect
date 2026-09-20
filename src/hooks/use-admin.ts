@@ -19,12 +19,20 @@ import {
  */
 async function callWithAuthRetry<T>(run: () => Promise<T>): Promise<T> {
   const recoveryKey = "tribalink-admin-request-recovered";
+  const isStaffDenied = (error: unknown) => {
+    const message = error instanceof Error ? error.message : String(error);
+    return /staff access only|forbidden/i.test(message);
+  };
 
   try {
     const result = await run();
     if (typeof window !== "undefined") sessionStorage.removeItem(recoveryKey);
     return result;
   } catch (error) {
+    // A valid student session cannot become a staff session by refreshing it.
+    // Preserve this error for StaffAccessCard instead of retrying and reloading.
+    if (isStaffDenied(error)) throw error;
+
     const { data } = await supabase.auth.refreshSession();
     if (!data.session) {
       const { data: existing } = await supabase.auth.getSession();
@@ -40,6 +48,8 @@ async function callWithAuthRetry<T>(run: () => Promise<T>): Promise<T> {
       if (typeof window !== "undefined") sessionStorage.removeItem(recoveryKey);
       return result;
     } catch (retryError) {
+      if (isStaffDenied(retryError)) throw retryError;
+
       // A tab left open across an app update can retain an obsolete server
       // function identifier. One clean reload obtains the current manifest.
       if (typeof window !== "undefined" && sessionStorage.getItem(recoveryKey) !== window.location.pathname) {
