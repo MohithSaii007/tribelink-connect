@@ -7,8 +7,8 @@ import { createServerFn } from "@tanstack/react-start";
  * All data is fabricated — no real person or government record is used.
  */
 
-const DEMO_STUDENT = { email: "student@tribalink.demo", password: "Demo@123", name: "Meena Kujur" };
-const DEMO_ADMIN = { email: "admin@tribalink.demo", password: "Admin@123", name: "R. Sahu (Reviewing Officer)" };
+const DEMO_STUDENT = { email: "student@tribalink.demo", password: "TribaLink#2026s", name: "Meena Kujur" };
+const DEMO_ADMIN = { email: "admin@tribalink.demo", password: "TribaLink#2026a", name: "R. Sahu (Reviewing Officer)" };
 
 const STATES = [
   { state: "Jharkhand", districts: ["Khunti", "Gumla", "West Singhbhum"], tribe: "Munda" },

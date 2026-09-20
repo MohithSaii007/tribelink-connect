@@ -106,8 +106,8 @@ function AuthPage() {
               <ShieldCheck className="size-4" aria-hidden /> Demo credentials
             </p>
             <div className="mt-2 grid gap-1 font-mono text-sm">
-              <span>student@tribalink.demo · Demo@123</span>
-              <span>admin@tribalink.demo · Admin@123</span>
+              <span>student@tribalink.demo · TribaLink#2026s</span>
+              <span>admin@tribalink.demo · TribaLink#2026a</span>
             </div>
             <SeedButton />
           </div>
@@ -208,7 +208,7 @@ function LoginCard({ next }: { next?: string | undefined }) {
               size="sm"
               onClick={() => {
                 setEmail("student@tribalink.demo");
-                setPassword("Demo@123");
+                setPassword("TribaLink#2026s");
               }}
             >
               Fill student demo
@@ -219,7 +219,7 @@ function LoginCard({ next }: { next?: string | undefined }) {
               size="sm"
               onClick={() => {
                 setEmail("admin@tribalink.demo");
-                setPassword("Admin@123");
+                setPassword("TribaLink#2026a");
               }}
             >
               Fill admin demo

@@ -147,8 +147,8 @@ function Landing() {
               <div className="mt-7 rounded-lg border border-border bg-card p-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Demo credentials</p>
                 <div className="mt-2 grid gap-1 font-mono text-sm text-foreground sm:grid-cols-2">
-                  <span>student@tribalink.demo · Demo@123</span>
-                  <span>admin@tribalink.demo · Admin@123</span>
+                  <span>student@tribalink.demo · TribaLink#2026s</span>
+                  <span>admin@tribalink.demo · TribaLink#2026a</span>
                 </div>
               </div>
             </div>
