@@ -18,8 +18,12 @@ import {
  * before giving up; if there is genuinely no session, send them to sign in.
  */
 async function callWithAuthRetry<T>(run: () => Promise<T>): Promise<T> {
+  const recoveryKey = "tribalink-admin-request-recovered";
+
   try {
-    return await run();
+    const result = await run();
+    if (typeof window !== "undefined") sessionStorage.removeItem(recoveryKey);
+    return result;
   } catch (error) {
     const { data } = await supabase.auth.refreshSession();
     if (!data.session) {
@@ -31,7 +35,20 @@ async function callWithAuthRetry<T>(run: () => Promise<T>): Promise<T> {
         throw error;
       }
     }
-    return await run();
+    try {
+      const result = await run();
+      if (typeof window !== "undefined") sessionStorage.removeItem(recoveryKey);
+      return result;
+    } catch (retryError) {
+      // A tab left open across an app update can retain an obsolete server
+      // function identifier. One clean reload obtains the current manifest.
+      if (typeof window !== "undefined" && sessionStorage.getItem(recoveryKey) !== window.location.pathname) {
+        sessionStorage.setItem(recoveryKey, window.location.pathname);
+        window.location.reload();
+        return new Promise<T>(() => undefined);
+      }
+      throw retryError;
+    }
   }
 }
 
