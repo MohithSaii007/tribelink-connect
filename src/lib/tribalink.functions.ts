@@ -85,13 +85,39 @@ export const getStudentWorkspace = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
 
-    // One parallel round-trip for everything that only needs the user id.
-    const [{ data: profile }, studentRes, { data: schemes }, notifRes] = await Promise.all([
-      supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
-      supabase.from("student_profiles").select("*").eq("user_id", userId).maybeSingle(),
-      supabase.from("scholarship_schemes").select("*").order("award_amount"),
-      supabase.from("notifications").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(50),
-    ]);
+    // Everything the student app needs in ONE parallel round-trip. The child
+    // tables are filtered through an inner join on student_profiles.user_id so
+    // we never have to wait for the student id before firing them.
+    const strip = <T extends Record<string, unknown>>(rows: T[] | null) =>
+      (rows ?? []).map(({ student_profiles: _sp, applications: _ap, ...rest }: never) => rest as T);
+
+    const [{ data: profile }, studentRes, { data: schemes }, notifRes, docsRes, appsRes, paysRes, eventsRes] =
+      await Promise.all([
+        supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
+        supabase.from("student_profiles").select("*").eq("user_id", userId).maybeSingle(),
+        supabase.from("scholarship_schemes").select("*").order("award_amount"),
+        supabase.from("notifications").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(50),
+        supabase
+          .from("documents")
+          .select("*, student_profiles!inner(user_id)")
+          .eq("student_profiles.user_id", userId)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("applications")
+          .select("*, student_profiles!inner(user_id)")
+          .eq("student_profiles.user_id", userId)
+          .order("submitted_at", { ascending: false }),
+        supabase
+          .from("payments")
+          .select("*, student_profiles!inner(user_id)")
+          .eq("student_profiles.user_id", userId)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("application_events")
+          .select("*, applications!inner(student_profiles!inner(user_id))")
+          .eq("applications.student_profiles.user_id", userId)
+          .order("created_at", { ascending: true }),
+      ]);
 
     let student = studentRes.data;
 
@@ -109,17 +135,6 @@ export const getStudentWorkspace = createServerFn({ method: "GET" })
       student = created;
     }
 
-    const sid = student?.id;
-    const [docsRes, appsRes, paysRes] = await Promise.all([
-      sid ? supabase.from("documents").select("*").eq("student_id", sid).order("created_at", { ascending: false }) : { data: [] },
-      sid ? supabase.from("applications").select("*").eq("student_id", sid).order("submitted_at", { ascending: false }) : { data: [] },
-      sid ? supabase.from("payments").select("*").eq("student_id", sid).order("created_at", { ascending: false }) : { data: [] },
-    ]);
-
-    const appIds = (appsRes.data ?? []).map((a) => a.id);
-    const eventsRes = appIds.length
-      ? await supabase.from("application_events").select("*").in("application_id", appIds).order("created_at", { ascending: true })
-      : { data: [] };
 
     const docs = (docsRes.data ?? []) as unknown as DocumentLike[];
     const apps = appsRes.data ?? [];
