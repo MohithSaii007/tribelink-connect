@@ -85,17 +85,20 @@ export const getStudentWorkspace = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
 
-    // One parallel round-trip for everything that only needs the user id.
+    // Everything the student workspace needs in a single parallel round-trip:
+    // documents, applications (with their activity) and payments come back
+    // nested inside the student row instead of as separate follow-up requests.
+    const NESTED = "*, documents(*), applications(*, application_events(*)), payments(*)";
     const [{ data: profile }, studentRes, { data: schemes }, notifRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
-      supabase.from("student_profiles").select("*").eq("user_id", userId).maybeSingle(),
+      supabase.from("student_profiles").select(NESTED).eq("user_id", userId).maybeSingle(),
       supabase.from("scholarship_schemes").select("*").order("award_amount"),
       supabase.from("notifications").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(50),
     ]);
 
-    let student = studentRes.data;
+    let row = studentRes.data as Record<string, unknown> | null;
 
-    if (!student) {
+    if (!row) {
       const { data: created } = await supabase
         .from("student_profiles")
         .insert({
@@ -106,23 +109,27 @@ export const getStudentWorkspace = createServerFn({ method: "GET" })
         })
         .select("*")
         .maybeSingle();
-      student = created;
+      row = (created as Record<string, unknown> | null) ?? null;
     }
 
-    const sid = student?.id;
-    const [docsRes, appsRes, paysRes] = await Promise.all([
-      sid ? supabase.from("documents").select("*").eq("student_id", sid).order("created_at", { ascending: false }) : { data: [] },
-      sid ? supabase.from("applications").select("*").eq("student_id", sid).order("submitted_at", { ascending: false }) : { data: [] },
-      sid ? supabase.from("payments").select("*").eq("student_id", sid).order("created_at", { ascending: false }) : { data: [] },
-    ]);
+    const { documents: nestedDocs, applications: nestedApps, payments: nestedPays, ...studentFields } = (row ?? {}) as Record<
+      string,
+      unknown
+    >;
+    const student = row ? (studentFields as never) : null;
 
-    const appIds = (appsRes.data ?? []).map((a) => a.id);
-    const eventsRes = appIds.length
-      ? await supabase.from("application_events").select("*").in("application_id", appIds).order("created_at", { ascending: true })
-      : { data: [] };
+    const byDateDesc = (a: string | null, b: string | null) => (b ?? "").localeCompare(a ?? "");
+    const docsData = ((nestedDocs as Record<string, never>[]) ?? []).slice().sort((a, b) => byDateDesc(a["created_at"], b["created_at"]));
+    const appsData = ((nestedApps as Record<string, never>[]) ?? [])
+      .slice()
+      .sort((a, b) => byDateDesc(a["submitted_at"], b["submitted_at"]));
+    const paysData = ((nestedPays as Record<string, never>[]) ?? []).slice().sort((a, b) => byDateDesc(a["created_at"], b["created_at"]));
+    const eventsData = appsData
+      .flatMap((a) => ((a["application_events"] as Record<string, never>[]) ?? []))
+      .sort((a, b) => (a["created_at"] ?? "").localeCompare(b["created_at"] ?? ""));
+    const apps = appsData.map(({ application_events: _events, ...rest }) => rest);
 
-    const docs = (docsRes.data ?? []) as unknown as DocumentLike[];
-    const apps = appsRes.data ?? [];
+    const docs = docsData as unknown as DocumentLike[];
     const schemeList = (schemes ?? []) as unknown as SchemeLike[];
 
     const eligibility = schemeList.map((s) => ({
