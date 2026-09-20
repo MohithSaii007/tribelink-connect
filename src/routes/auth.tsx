@@ -253,8 +253,8 @@ function RegisterCard({ next }: { next?: string | undefined }) {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (form.password.length < 8) {
-      toast.error("Please choose a password of at least 8 characters.");
+    if (form.password.length < 6) {
+      toast.error("Please choose a password of at least 6 characters.");
       return;
     }
     if (!/^\d{10}$/.test(form.phone)) {
@@ -471,8 +471,8 @@ function ResetCard() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (password.length < 8) {
-      toast.error("Please choose a password of at least 8 characters.");
+    if (password.length < 6) {
+      toast.error("Please choose a password of at least 6 characters.");
       return;
     }
     if (password !== confirm) {
