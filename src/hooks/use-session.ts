@@ -22,7 +22,7 @@ export function useTribalinkSession() {
   return useQuery({
     queryKey: ["tl-session"],
     queryFn: () => fn({}),
-    staleTime: 30_000,
+    staleTime: 300_000,
   });
 }
 

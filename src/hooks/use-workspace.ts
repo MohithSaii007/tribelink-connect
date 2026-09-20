@@ -10,7 +10,7 @@ export function useWorkspace() {
   return useQuery({
     queryKey: ["workspace"],
     queryFn: () => fn({}),
-    staleTime: 15_000,
+    staleTime: 300_000,
   });
 }
 

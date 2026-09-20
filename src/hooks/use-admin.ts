@@ -12,32 +12,32 @@ import {
 
 export function useAnalytics() {
   const fn = useServerFn(getAdminAnalytics);
-  return useQuery({ queryKey: ["admin-analytics"], queryFn: () => fn({}), staleTime: 15_000 });
+  return useQuery({ queryKey: ["admin-analytics"], queryFn: () => fn({}), staleTime: 300_000 });
 }
 
 export function useAdminStudents() {
   const fn = useServerFn(listAdminStudents);
-  return useQuery({ queryKey: ["admin-students"], queryFn: () => fn({}), staleTime: 15_000 });
+  return useQuery({ queryKey: ["admin-students"], queryFn: () => fn({}), staleTime: 300_000 });
 }
 
 export function useAdminApplications() {
   const fn = useServerFn(listAdminApplications);
-  return useQuery({ queryKey: ["admin-applications"], queryFn: () => fn({}), staleTime: 15_000 });
+  return useQuery({ queryKey: ["admin-applications"], queryFn: () => fn({}), staleTime: 300_000 });
 }
 
 export function useReviewQueue() {
   const fn = useServerFn(listReviewQueue);
-  return useQuery({ queryKey: ["admin-review"], queryFn: () => fn({}), staleTime: 10_000 });
+  return useQuery({ queryKey: ["admin-review"], queryFn: () => fn({}), staleTime: 300_000 });
 }
 
 export function useGaps() {
   const fn = useServerFn(listBeneficiaryGaps);
-  return useQuery({ queryKey: ["admin-gaps"], queryFn: () => fn({}), staleTime: 15_000 });
+  return useQuery({ queryKey: ["admin-gaps"], queryFn: () => fn({}), staleTime: 300_000 });
 }
 
 export function useAuditLogs() {
   const fn = useServerFn(listAuditLogs);
-  return useQuery({ queryKey: ["admin-audit"], queryFn: () => fn({}), staleTime: 15_000 });
+  return useQuery({ queryKey: ["admin-audit"], queryFn: () => fn({}), staleTime: 300_000 });
 }
 
 export function useRefreshAdmin() {
