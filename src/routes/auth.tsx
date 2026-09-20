@@ -81,6 +81,7 @@ function AuthPage() {
               <span>student@tribalink.demo · Demo@123</span>
               <span>admin@tribalink.demo · Admin@123</span>
             </div>
+            <SeedButton />
           </div>
           <div className="mt-6">
             <PrototypeBadge />
