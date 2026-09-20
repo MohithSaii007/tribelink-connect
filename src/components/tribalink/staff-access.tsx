@@ -12,7 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 export function isStaffForbidden(error: unknown): boolean {
   if (!error) return false;
   const text = typeof error === "string" ? error : ((error as { message?: string })?.message ?? String(error));
-  return /staff access only|forbidden/i.test(text);
+  return /staff access only/i.test(text);
 }
 
 export function StaffAccessCard({

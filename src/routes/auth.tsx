@@ -138,8 +138,11 @@ async function routeAfterLogin(navigate: ReturnType<typeof useNavigate>, next?: 
     return;
   }
   const { data } = await supabase.auth.getUser();
-  const email = data.user?.email ?? "";
-  const staff = email.startsWith("admin@") || email.startsWith("officer@");
+  const userId = data.user?.id;
+  const { data: roles } = userId
+    ? await supabase.from("user_roles").select("role").eq("user_id", userId)
+    : { data: null };
+  const staff = (roles ?? []).some(({ role }) => role === "admin" || role === "officer");
   window.location.href = staff ? "/admin/dashboard" : "/student/dashboard";
   void navigate;
 }
