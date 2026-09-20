@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { GraduationCap, Loader2, ShieldCheck } from "lucide-react";
@@ -14,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { seedDemoData } from "@/lib/seed.functions";
-import { getStudentWorkspace, updateStudentProfile } from "@/lib/tribalink.functions";
+import { getAdminAnalytics, getStudentWorkspace, updateStudentProfile } from "@/lib/tribalink.functions";
 
 function SeedButton() {
   const seed = useServerFn(seedDemoData);
@@ -132,24 +133,38 @@ function AuthPage() {
   );
 }
 
-async function routeAfterLogin(navigate: ReturnType<typeof useNavigate>, next?: string) {
+async function routeAfterLogin(
+  navigate: ReturnType<typeof useNavigate>,
+  next?: string,
+  userId?: string,
+  warmDashboard?: (staff: boolean) => Promise<void>,
+) {
   if (next && next.startsWith("/")) {
     await navigate({ to: next });
     return;
   }
-  const { data } = await supabase.auth.getSession();
-  const userId = data.session?.user?.id;
-  const { data: roles } = userId
-    ? await supabase.from("user_roles").select("role").eq("user_id", userId)
+  let activeUserId = userId;
+  if (!activeUserId) {
+    const { data } = await supabase.auth.getSession();
+    activeUserId = data.session?.user?.id;
+  }
+  const { data: roles } = activeUserId
+    ? await supabase.from("user_roles").select("role").eq("user_id", activeUserId)
     : { data: null };
   const staff = (roles ?? []).some(({ role }) => role === "admin" || role === "officer");
-  // Client-side navigation keeps the already-warm app shell instead of paying
-  // for a whole fresh page load after sign-in.
-  await navigate({ to: staff ? "/admin/dashboard" : "/student/dashboard" });
+  // Start the dashboard request before navigation. The destination hook reuses
+  // the same in-flight query instead of beginning its work after the page opens.
+  await Promise.all([
+    warmDashboard?.(staff) ?? Promise.resolve(),
+    navigate({ to: staff ? "/admin/dashboard" : "/student/dashboard" }),
+  ]);
 }
 
 function LoginCard({ next }: { next?: string | undefined }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const loadWorkspace = useServerFn(getStudentWorkspace);
+  const loadAnalytics = useServerFn(getAdminAnalytics);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -157,7 +172,7 @@ function LoginCard({ next }: { next?: string | undefined }) {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
-    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     setBusy(false);
     if (error) {
       toast.error(
@@ -168,7 +183,13 @@ function LoginCard({ next }: { next?: string | undefined }) {
       return;
     }
     toast.success("Signed in. Loading your scholarship view…");
-    await routeAfterLogin(navigate, next);
+    await routeAfterLogin(navigate, next, data.user?.id, (staff) =>
+      queryClient.prefetchQuery({
+        queryKey: [staff ? "admin-analytics" : "workspace"],
+        queryFn: () => (staff ? loadAnalytics({}) : loadWorkspace({})),
+        staleTime: 300_000,
+      }),
+    );
   }
 
   return (

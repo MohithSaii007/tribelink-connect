@@ -8,7 +8,10 @@ import { getSession } from "@/lib/tribalink.functions";
 export function useAuthUser() {
   const [userId, setUserId] = useState<string | null | undefined>(undefined);
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
+    // The protected server functions validate the user token. For the shell we
+    // only need the locally cached session, avoiding a remote /auth/v1/user
+    // request every time a portal layout mounts.
+    supabase.auth.getSession().then(({ data }) => setUserId(data.session?.user?.id ?? null));
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       setUserId(session?.user?.id ?? null);
     });
