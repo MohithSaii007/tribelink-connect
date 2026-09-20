@@ -88,8 +88,12 @@ export const getStudentWorkspace = createServerFn({ method: "GET" })
     // Everything the student app needs in ONE parallel round-trip. The child
     // tables are filtered through an inner join on student_profiles.user_id so
     // we never have to wait for the student id before firing them.
-    const strip = <T extends Record<string, unknown>>(rows: T[] | null) =>
-      (rows ?? []).map(({ student_profiles: _sp, applications: _ap, ...rest }: never) => rest as T);
+    const strip = (rows: unknown): Record<string, unknown>[] =>
+      ((rows ?? []) as Record<string, unknown>[]).map((row) => {
+        const { student_profiles: _sp, applications: _ap, ...rest } = row;
+        return rest;
+      });
+
 
     const [{ data: profile }, studentRes, { data: schemes }, notifRes, docsRes, appsRes, paysRes, eventsRes] =
       await Promise.all([
