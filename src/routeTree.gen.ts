@@ -10,33 +10,353 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as StudentRouteImport } from './routes/student'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
+import { Route as AdminApplicationsRouteImport } from './routes/admin.applications'
+import { Route as AdminAuditLogsRouteImport } from './routes/admin.audit-logs'
+import { Route as AdminBeneficiaryGapsRouteImport } from './routes/admin.beneficiary-gaps'
+import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as AdminReviewRouteImport } from './routes/admin.review'
+import { Route as AdminSchemesRouteImport } from './routes/admin.schemes'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminStudentsRouteImport } from './routes/admin.students'
+import { Route as AdminVerificationRouteImport } from './routes/admin.verification'
+import { Route as StudentApplicationsRouteImport } from './routes/student.applications'
+import { Route as StudentDashboardRouteImport } from './routes/student.dashboard'
+import { Route as StudentDocumentsRouteImport } from './routes/student.documents'
+import { Route as StudentHelpRouteImport } from './routes/student.help'
+import { Route as StudentJagoRouteImport } from './routes/student.jago'
+import { Route as StudentNotificationsRouteImport } from './routes/student.notifications'
+import { Route as StudentPaymentsRouteImport } from './routes/student.payments'
+import { Route as StudentProfileRouteImport } from './routes/student.profile'
+import { Route as StudentScholarshipsRouteImport } from './routes/student.scholarships'
+import { Route as StudentSettingsRouteImport } from './routes/student.settings'
+import { Route as StudentVerificationRouteImport } from './routes/student.verification'
+import { Route as ApiIntegrationsProviderRouteImport } from './routes/api/integrations/$provider'
+import { Route as StudentApplySchemeIdRouteImport } from './routes/student.apply.$schemeId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentRoute = StudentRouteImport.update({
+  id: '/student',
+  path: '/student',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAuditLogsRoute = AdminAuditLogsRouteImport.update({
+  id: '/audit-logs',
+  path: '/audit-logs',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminBeneficiaryGapsRoute = AdminBeneficiaryGapsRouteImport.update({
+  id: '/beneficiary-gaps',
+  path: '/beneficiary-gaps',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReviewRoute = AdminReviewRouteImport.update({
+  id: '/review',
+  path: '/review',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSchemesRoute = AdminSchemesRouteImport.update({
+  id: '/schemes',
+  path: '/schemes',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminStudentsRoute = AdminStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVerificationRoute = AdminVerificationRouteImport.update({
+  id: '/verification',
+  path: '/verification',
+  getParentRoute: () => AdminRoute,
+} as any)
+const StudentApplicationsRoute = StudentApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentDashboardRoute = StudentDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentDocumentsRoute = StudentDocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentHelpRoute = StudentHelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentJagoRoute = StudentJagoRouteImport.update({
+  id: '/jago',
+  path: '/jago',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentNotificationsRoute = StudentNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentPaymentsRoute = StudentPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentProfileRoute = StudentProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentScholarshipsRoute = StudentScholarshipsRouteImport.update({
+  id: '/scholarships',
+  path: '/scholarships',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentSettingsRoute = StudentSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentVerificationRoute = StudentVerificationRouteImport.update({
+  id: '/verification',
+  path: '/verification',
+  getParentRoute: () => StudentRoute,
+} as any)
+const ApiIntegrationsProviderRoute = ApiIntegrationsProviderRouteImport.update({
+  id: '/api/integrations/$provider',
+  path: '/api/integrations/$provider',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentApplySchemeIdRoute = StudentApplySchemeIdRouteImport.update({
+  id: '/apply/$schemeId',
+  path: '/apply/$schemeId',
+  getParentRoute: () => StudentRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/student': typeof StudentRouteWithChildren
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/applications': typeof AdminApplicationsRoute
+  '/admin/audit-logs': typeof AdminAuditLogsRoute
+  '/admin/beneficiary-gaps': typeof AdminBeneficiaryGapsRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/review': typeof AdminReviewRoute
+  '/admin/schemes': typeof AdminSchemesRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/students': typeof AdminStudentsRoute
+  '/admin/verification': typeof AdminVerificationRoute
+  '/student/applications': typeof StudentApplicationsRoute
+  '/student/dashboard': typeof StudentDashboardRoute
+  '/student/documents': typeof StudentDocumentsRoute
+  '/student/help': typeof StudentHelpRoute
+  '/student/jago': typeof StudentJagoRoute
+  '/student/notifications': typeof StudentNotificationsRoute
+  '/student/payments': typeof StudentPaymentsRoute
+  '/student/profile': typeof StudentProfileRoute
+  '/student/scholarships': typeof StudentScholarshipsRoute
+  '/student/settings': typeof StudentSettingsRoute
+  '/student/verification': typeof StudentVerificationRoute
+  '/api/integrations/$provider': typeof ApiIntegrationsProviderRoute
+  '/student/apply/$schemeId': typeof StudentApplySchemeIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/student': typeof StudentRouteWithChildren
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/applications': typeof AdminApplicationsRoute
+  '/admin/audit-logs': typeof AdminAuditLogsRoute
+  '/admin/beneficiary-gaps': typeof AdminBeneficiaryGapsRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/review': typeof AdminReviewRoute
+  '/admin/schemes': typeof AdminSchemesRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/students': typeof AdminStudentsRoute
+  '/admin/verification': typeof AdminVerificationRoute
+  '/student/applications': typeof StudentApplicationsRoute
+  '/student/dashboard': typeof StudentDashboardRoute
+  '/student/documents': typeof StudentDocumentsRoute
+  '/student/help': typeof StudentHelpRoute
+  '/student/jago': typeof StudentJagoRoute
+  '/student/notifications': typeof StudentNotificationsRoute
+  '/student/payments': typeof StudentPaymentsRoute
+  '/student/profile': typeof StudentProfileRoute
+  '/student/scholarships': typeof StudentScholarshipsRoute
+  '/student/settings': typeof StudentSettingsRoute
+  '/student/verification': typeof StudentVerificationRoute
+  '/api/integrations/$provider': typeof ApiIntegrationsProviderRoute
+  '/student/apply/$schemeId': typeof StudentApplySchemeIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/student': typeof StudentRouteWithChildren
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/applications': typeof AdminApplicationsRoute
+  '/admin/audit-logs': typeof AdminAuditLogsRoute
+  '/admin/beneficiary-gaps': typeof AdminBeneficiaryGapsRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/review': typeof AdminReviewRoute
+  '/admin/schemes': typeof AdminSchemesRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/students': typeof AdminStudentsRoute
+  '/admin/verification': typeof AdminVerificationRoute
+  '/student/applications': typeof StudentApplicationsRoute
+  '/student/dashboard': typeof StudentDashboardRoute
+  '/student/documents': typeof StudentDocumentsRoute
+  '/student/help': typeof StudentHelpRoute
+  '/student/jago': typeof StudentJagoRoute
+  '/student/notifications': typeof StudentNotificationsRoute
+  '/student/payments': typeof StudentPaymentsRoute
+  '/student/profile': typeof StudentProfileRoute
+  '/student/scholarships': typeof StudentScholarshipsRoute
+  '/student/settings': typeof StudentSettingsRoute
+  '/student/verification': typeof StudentVerificationRoute
+  '/api/integrations/$provider': typeof ApiIntegrationsProviderRoute
+  '/student/apply/$schemeId': typeof StudentApplySchemeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/auth'
+    | '/student'
+    | '/admin/analytics'
+    | '/admin/applications'
+    | '/admin/audit-logs'
+    | '/admin/beneficiary-gaps'
+    | '/admin/dashboard'
+    | '/admin/review'
+    | '/admin/schemes'
+    | '/admin/settings'
+    | '/admin/students'
+    | '/admin/verification'
+    | '/student/applications'
+    | '/student/dashboard'
+    | '/student/documents'
+    | '/student/help'
+    | '/student/jago'
+    | '/student/notifications'
+    | '/student/payments'
+    | '/student/profile'
+    | '/student/scholarships'
+    | '/student/settings'
+    | '/student/verification'
+    | '/api/integrations/$provider'
+    | '/student/apply/$schemeId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/auth'
+    | '/student'
+    | '/admin/analytics'
+    | '/admin/applications'
+    | '/admin/audit-logs'
+    | '/admin/beneficiary-gaps'
+    | '/admin/dashboard'
+    | '/admin/review'
+    | '/admin/schemes'
+    | '/admin/settings'
+    | '/admin/students'
+    | '/admin/verification'
+    | '/student/applications'
+    | '/student/dashboard'
+    | '/student/documents'
+    | '/student/help'
+    | '/student/jago'
+    | '/student/notifications'
+    | '/student/payments'
+    | '/student/profile'
+    | '/student/scholarships'
+    | '/student/settings'
+    | '/student/verification'
+    | '/api/integrations/$provider'
+    | '/student/apply/$schemeId'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/auth'
+    | '/student'
+    | '/admin/analytics'
+    | '/admin/applications'
+    | '/admin/audit-logs'
+    | '/admin/beneficiary-gaps'
+    | '/admin/dashboard'
+    | '/admin/review'
+    | '/admin/schemes'
+    | '/admin/settings'
+    | '/admin/students'
+    | '/admin/verification'
+    | '/student/applications'
+    | '/student/dashboard'
+    | '/student/documents'
+    | '/student/help'
+    | '/student/jago'
+    | '/student/notifications'
+    | '/student/payments'
+    | '/student/profile'
+    | '/student/scholarships'
+    | '/student/settings'
+    | '/student/verification'
+    | '/api/integrations/$provider'
+    | '/student/apply/$schemeId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  StudentRoute: typeof StudentRouteWithChildren
+  ApiIntegrationsProviderRoute: typeof ApiIntegrationsProviderRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +368,258 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student': {
+      id: '/student'
+      path: '/student'
+      fullPath: '/student'
+      preLoaderRoute: typeof StudentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/applications': {
+      id: '/admin/applications'
+      path: '/applications'
+      fullPath: '/admin/applications'
+      preLoaderRoute: typeof AdminApplicationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/audit-logs': {
+      id: '/admin/audit-logs'
+      path: '/audit-logs'
+      fullPath: '/admin/audit-logs'
+      preLoaderRoute: typeof AdminAuditLogsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/beneficiary-gaps': {
+      id: '/admin/beneficiary-gaps'
+      path: '/beneficiary-gaps'
+      fullPath: '/admin/beneficiary-gaps'
+      preLoaderRoute: typeof AdminBeneficiaryGapsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/review': {
+      id: '/admin/review'
+      path: '/review'
+      fullPath: '/admin/review'
+      preLoaderRoute: typeof AdminReviewRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/schemes': {
+      id: '/admin/schemes'
+      path: '/schemes'
+      fullPath: '/admin/schemes'
+      preLoaderRoute: typeof AdminSchemesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/students': {
+      id: '/admin/students'
+      path: '/students'
+      fullPath: '/admin/students'
+      preLoaderRoute: typeof AdminStudentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/verification': {
+      id: '/admin/verification'
+      path: '/verification'
+      fullPath: '/admin/verification'
+      preLoaderRoute: typeof AdminVerificationRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/student/applications': {
+      id: '/student/applications'
+      path: '/applications'
+      fullPath: '/student/applications'
+      preLoaderRoute: typeof StudentApplicationsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/dashboard': {
+      id: '/student/dashboard'
+      path: '/dashboard'
+      fullPath: '/student/dashboard'
+      preLoaderRoute: typeof StudentDashboardRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/documents': {
+      id: '/student/documents'
+      path: '/documents'
+      fullPath: '/student/documents'
+      preLoaderRoute: typeof StudentDocumentsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/help': {
+      id: '/student/help'
+      path: '/help'
+      fullPath: '/student/help'
+      preLoaderRoute: typeof StudentHelpRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/jago': {
+      id: '/student/jago'
+      path: '/jago'
+      fullPath: '/student/jago'
+      preLoaderRoute: typeof StudentJagoRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/notifications': {
+      id: '/student/notifications'
+      path: '/notifications'
+      fullPath: '/student/notifications'
+      preLoaderRoute: typeof StudentNotificationsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/payments': {
+      id: '/student/payments'
+      path: '/payments'
+      fullPath: '/student/payments'
+      preLoaderRoute: typeof StudentPaymentsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/profile': {
+      id: '/student/profile'
+      path: '/profile'
+      fullPath: '/student/profile'
+      preLoaderRoute: typeof StudentProfileRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/scholarships': {
+      id: '/student/scholarships'
+      path: '/scholarships'
+      fullPath: '/student/scholarships'
+      preLoaderRoute: typeof StudentScholarshipsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/settings': {
+      id: '/student/settings'
+      path: '/settings'
+      fullPath: '/student/settings'
+      preLoaderRoute: typeof StudentSettingsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/verification': {
+      id: '/student/verification'
+      path: '/verification'
+      fullPath: '/student/verification'
+      preLoaderRoute: typeof StudentVerificationRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/api/integrations/$provider': {
+      id: '/api/integrations/$provider'
+      path: '/api/integrations/$provider'
+      fullPath: '/api/integrations/$provider'
+      preLoaderRoute: typeof ApiIntegrationsProviderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student/apply/$schemeId': {
+      id: '/student/apply/$schemeId'
+      path: '/apply/$schemeId'
+      fullPath: '/student/apply/$schemeId'
+      preLoaderRoute: typeof StudentApplySchemeIdRouteImport
+      parentRoute: typeof StudentRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminApplicationsRoute: typeof AdminApplicationsRoute
+  AdminAuditLogsRoute: typeof AdminAuditLogsRoute
+  AdminBeneficiaryGapsRoute: typeof AdminBeneficiaryGapsRoute
+  AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminReviewRoute: typeof AdminReviewRoute
+  AdminSchemesRoute: typeof AdminSchemesRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminStudentsRoute: typeof AdminStudentsRoute
+  AdminVerificationRoute: typeof AdminVerificationRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminApplicationsRoute: AdminApplicationsRoute,
+  AdminAuditLogsRoute: AdminAuditLogsRoute,
+  AdminBeneficiaryGapsRoute: AdminBeneficiaryGapsRoute,
+  AdminDashboardRoute: AdminDashboardRoute,
+  AdminReviewRoute: AdminReviewRoute,
+  AdminSchemesRoute: AdminSchemesRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminStudentsRoute: AdminStudentsRoute,
+  AdminVerificationRoute: AdminVerificationRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface StudentRouteChildren {
+  StudentApplicationsRoute: typeof StudentApplicationsRoute
+  StudentDashboardRoute: typeof StudentDashboardRoute
+  StudentDocumentsRoute: typeof StudentDocumentsRoute
+  StudentHelpRoute: typeof StudentHelpRoute
+  StudentJagoRoute: typeof StudentJagoRoute
+  StudentNotificationsRoute: typeof StudentNotificationsRoute
+  StudentPaymentsRoute: typeof StudentPaymentsRoute
+  StudentProfileRoute: typeof StudentProfileRoute
+  StudentScholarshipsRoute: typeof StudentScholarshipsRoute
+  StudentSettingsRoute: typeof StudentSettingsRoute
+  StudentVerificationRoute: typeof StudentVerificationRoute
+  StudentApplySchemeIdRoute: typeof StudentApplySchemeIdRoute
+}
+
+const StudentRouteChildren: StudentRouteChildren = {
+  StudentApplicationsRoute: StudentApplicationsRoute,
+  StudentDashboardRoute: StudentDashboardRoute,
+  StudentDocumentsRoute: StudentDocumentsRoute,
+  StudentHelpRoute: StudentHelpRoute,
+  StudentJagoRoute: StudentJagoRoute,
+  StudentNotificationsRoute: StudentNotificationsRoute,
+  StudentPaymentsRoute: StudentPaymentsRoute,
+  StudentProfileRoute: StudentProfileRoute,
+  StudentScholarshipsRoute: StudentScholarshipsRoute,
+  StudentSettingsRoute: StudentSettingsRoute,
+  StudentVerificationRoute: StudentVerificationRoute,
+  StudentApplySchemeIdRoute: StudentApplySchemeIdRoute,
+}
+
+const StudentRouteWithChildren =
+  StudentRoute._addFileChildren(StudentRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
+  AuthRoute: AuthRoute,
+  StudentRoute: StudentRouteWithChildren,
+  ApiIntegrationsProviderRoute: ApiIntegrationsProviderRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
