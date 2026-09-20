@@ -128,7 +128,10 @@ function RootComponent() {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();
-      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+      // Do not invalidate every query after sign-in. The destination dashboard
+      // may already be prefetching its data, and a global invalidation turns
+      // that single request into a duplicate request storm.
+      if (event === "SIGNED_OUT") queryClient.clear();
     });
     return () => sub.subscription.unsubscribe();
   }, [router, queryClient]);
